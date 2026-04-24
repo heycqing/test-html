@@ -1,0 +1,411 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>积分管理系统</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+body{font-family:-apple-system,'PingFang SC','Microsoft YaHei',sans-serif;background:#f5f5f5;display:flex;justify-content:center;min-height:100vh}
+.app{width:100%;max-width:390px;min-height:100vh;background:#f5f5f5;position:relative;overflow:hidden;display:flex;flex-direction:column}
+.statusbar{height:44px;background:#07C160;display:flex;align-items:flex-end;padding-bottom:8px;padding-left:16px}
+.statusbar-time{color:#fff;font-size:12px;font-weight:600}
+.navbar{background:#07C160;padding:10px 16px 14px;display:flex;align-items:center;gap:12px;position:relative}
+.nav-back{color:#fff;font-size:22px;cursor:pointer;padding:4px;display:none;line-height:1}
+.nav-title{color:#fff;font-size:17px;font-weight:600;flex:1}
+.nav-avatar{width:32px;height:32px;border-radius:50%;background:rgba(255,255,255,0.3);display:flex;align-items:center;justify-content:center;color:#fff;font-size:13px;font-weight:600}
+.tabbar{display:flex;background:#fff;border-bottom:1px solid #e8e8e8}
+.tab{flex:1;padding:11px 0;text-align:center;font-size:13px;color:#999;cursor:pointer;position:relative;transition:color .2s}
+.tab.active{color:#07C160;font-weight:500}
+.tab.active::after{content:'';position:absolute;bottom:0;left:50%;transform:translateX(-50%);width:24px;height:2px;background:#07C160;border-radius:2px}
+.screen{flex:1;overflow-y:auto;padding:12px;-webkit-overflow-scrolling:touch}
+.page{display:none}
+.page.active{display:block}
+.section-label{font-size:12px;color:#999;margin:14px 0 8px 2px;text-transform:uppercase;letter-spacing:.5px}
+.card{background:#fff;border-radius:12px;padding:14px;margin-bottom:10px;box-shadow:0 1px 3px rgba(0,0,0,0.06)}
+.card-title{font-size:13px;color:#999;margin-bottom:8px}
+.stat-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px}
+.stat-box{background:#fff;border-radius:12px;padding:14px;text-align:center;box-shadow:0 1px 3px rgba(0,0,0,0.06)}
+.stat-num{font-size:24px;font-weight:600;color:#1a1a1a}
+.stat-sub{font-size:11px;color:#999;margin-top:3px}
+.menu-item{display:flex;align-items:center;background:#fff;border-radius:12px;padding:14px;margin-bottom:10px;cursor:pointer;box-shadow:0 1px 3px rgba(0,0,0,0.06);transition:background .15s}
+.menu-item:active{background:#f9f9f9}
+.menu-icon{width:40px;height:40px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:20px;margin-right:12px;flex-shrink:0}
+.icon-green{background:#E8F8EF}
+.icon-blue{background:#E6F1FB}
+.icon-amber{background:#FFF4E0}
+.icon-red{background:#FFEEEE}
+.menu-info{flex:1}
+.menu-name{font-size:15px;font-weight:500;color:#1a1a1a}
+.menu-desc{font-size:12px;color:#999;margin-top:2px}
+.menu-arrow{color:#ccc;font-size:18px}
+.badge{display:inline-flex;align-items:center;font-size:11px;padding:3px 9px;border-radius:20px;font-weight:500}
+.badge-green{background:#E8F8EF;color:#07C160}
+.badge-amber{background:#FFF4E0;color:#B8750A}
+.badge-red{background:#FFEEEE;color:#C0392B}
+.badge-gray{background:#f5f5f5;color:#999}
+.badge-blue{background:#E6F1FB;color:#185FA5}
+.list-row{display:flex;align-items:center;justify-content:space-between;padding:13px 0;border-bottom:1px solid #f5f5f5}
+.list-row:last-child{border-bottom:none}
+.avatar-circle{width:38px;height:38px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:600;flex-shrink:0;margin-right:10px}
+.av-green{background:#E8F8EF;color:#07C160}
+.av-blue{background:#E6F1FB;color:#185FA5}
+.av-amber{background:#FFF4E0;color:#B8750A}
+.av-red{background:#FFEEEE;color:#C0392B}
+.btn{display:block;width:100%;padding:13px;border-radius:12px;border:none;font-size:15px;font-weight:500;cursor:pointer;text-align:center;transition:opacity .15s}
+.btn:active{opacity:.8}
+.btn-green{background:#07C160;color:#fff}
+.btn-outline{background:#fff;border:1px solid #e0e0e0;color:#333}
+.btn-red{background:#FFEEEE;color:#C0392B;border:1px solid #f5b7b7}
+.btn-sm{font-size:13px;padding:7px 14px;border-radius:8px;width:auto;display:inline-block}
+.form-label{font-size:13px;color:#666;margin-bottom:6px}
+.form-input{width:100%;padding:11px 14px;border:1px solid #e8e8e8;border-radius:10px;font-size:14px;color:#1a1a1a;background:#fafafa;outline:none;-webkit-appearance:none}
+.form-input:focus{border-color:#07C160;background:#fff}
+.form-group{margin-bottom:14px}
+.divider{height:1px;background:#f5f5f5;margin:6px 0}
+.info-row{display:flex;justify-content:space-between;align-items:center;font-size:14px;padding:9px 0;border-bottom:1px solid #f5f5f5}
+.info-row:last-child{border-bottom:none}
+.info-key{color:#999}
+.qr-wrap{text-align:center;padding:20px 0}
+.qr-frame{width:160px;height:160px;margin:0 auto 14px;background:#fff;border-radius:12px;display:flex;align-items:center;justify-content:center;border:1px solid #e8e8e8;box-shadow:0 2px 8px rgba(0,0,0,0.08)}
+.success-banner{background:#E8F8EF;border:1.5px solid #07C160;border-radius:12px;padding:20px;text-align:center;margin-bottom:10px}
+.error-banner{background:#FFEEEE;border:1.5px solid #f5b7b7;border-radius:12px;padding:20px;text-align:center;margin-bottom:10px}
+.scan-area{width:200px;height:200px;margin:0 auto 16px;border:2px dashed #ccc;border-radius:16px;display:flex;flex-direction:column;align-items:center;justify-content:center;cursor:pointer;transition:border-color .2s;background:#fafafa}
+.scan-area:active{border-color:#07C160;background:#f0faf4}
+.point-plus{color:#07C160;font-size:13px;font-weight:500}
+.point-minus{color:#C0392B;font-size:13px;font-weight:500}
+.user-hero{text-align:center;padding:20px 0 16px}
+select{width:100%;padding:11px 14px;border:1px solid #e8e8e8;border-radius:10px;font-size:14px;color:#1a1a1a;background:#fafafa;outline:none;-webkit-appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%23999' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 12px center}
+.gift-item{display:flex;align-items:center;justify-content:space-between;padding:13px 0;border-bottom:1px solid #f5f5f5}
+.gift-item:last-child{border-bottom:none}
+.tab-role{display:flex;background:#fff;padding:4px;border-radius:12px;gap:4px;margin-bottom:12px;box-shadow:0 1px 3px rgba(0,0,0,0.06)}
+.tab-role-btn{flex:1;padding:9px;border-radius:9px;font-size:13px;font-weight:500;color:#999;text-align:center;cursor:pointer;transition:all .2s}
+.tab-role-btn.active{background:#07C160;color:#fff}
+</style>
+</head>
+<body>
+<div class="app">
+  <div class="statusbar"><span class="statusbar-time">9:41</span></div>
+  <div class="navbar">
+    <span class="nav-back" id="backBtn" onclick="goBack()">‹</span>
+    <span class="nav-title" id="navTitle">积分管理系统</span>
+    <div class="nav-avatar" id="navAvatar">我</div>
+  </div>
+
+  <div id="mainView">
+    <div style="padding:12px 12px 0">
+      <div class="tab-role">
+        <div class="tab-role-btn active" onclick="switchRole('L1',this)">一级账户</div>
+        <div class="tab-role-btn" onclick="switchRole('L2',this)">二级账户</div>
+        <div class="tab-role-btn" onclick="switchRole('L3',this)">三级账户</div>
+      </div>
+    </div>
+    <div class="screen" id="mainContent"></div>
+  </div>
+
+  <div id="subView" style="display:none;flex:1;overflow-y:auto;padding:12px;-webkit-overflow-scrolling:touch"></div>
+</div>
+
+<script>
+let currentRole='L1';
+let navStack=[];
+
+const roleAvatars={L1:'我',L2:'员',L3:'客'};
+
+function switchRole(role,el){
+  currentRole=role;
+  document.querySelectorAll('.tab-role-btn').forEach(b=>b.classList.remove('active'));
+  el.classList.add('active');
+  document.getElementById('navAvatar').textContent=roleAvatars[role];
+  renderMain();
+}
+
+function renderMain(){
+  document.getElementById('mainContent').innerHTML=mainScreens[currentRole]();
+}
+
+function goSub(page){
+  navStack.push(page);
+  const titles={genQR:'生成二维码',scanLog:'扫码记录',transferPoints:'积分管理',scanQR:'扫码提取积分',redeemGift:'兑换礼品',agentList:'客户管理'};
+  document.getElementById('navTitle').textContent=titles[page]||'';
+  document.getElementById('backBtn').style.display='block';
+  document.getElementById('navAvatar').style.display='none';
+  document.getElementById('mainView').style.display='none';
+  const sv=document.getElementById('subView');
+  sv.style.display='block';
+  sv.innerHTML=subScreens[page]();
+}
+
+function goBack(){
+  navStack.pop();
+  if(navStack.length===0){
+    document.getElementById('mainView').style.display='block';
+    document.getElementById('subView').style.display='none';
+    document.getElementById('backBtn').style.display='none';
+    document.getElementById('navTitle').textContent='积分管理系统';
+    document.getElementById('navAvatar').style.display='flex';
+  } else {
+    const page=navStack[navStack.length-1];
+    document.getElementById('subView').innerHTML=subScreens[page]();
+  }
+}
+
+const mainScreens={
+  L1:()=>`
+    <div class="stat-grid">
+      <div class="stat-box"><div class="stat-num">12,500</div><div class="stat-sub">积分池总量</div></div>
+      <div class="stat-box"><div class="stat-num">8</div><div class="stat-sub">已生成二维码</div></div>
+      <div class="stat-box"><div class="stat-num">3</div><div class="stat-sub">业务员数量</div></div>
+      <div class="stat-box"><div class="stat-num">24</div><div class="stat-sub">客户总数</div></div>
+    </div>
+    <div class="section-label">功能入口</div>
+    <div class="menu-item" onclick="goSub('genQR')">
+      <div class="menu-icon icon-green">🎫</div>
+      <div class="menu-info"><div class="menu-name">生成积分二维码</div><div class="menu-desc">指定积分数量，打印二维码</div></div>
+      <span class="menu-arrow">›</span>
+    </div>
+    <div class="menu-item" onclick="goSub('scanLog')">
+      <div class="menu-icon icon-blue">📋</div>
+      <div class="menu-info"><div class="menu-name">扫码记录查询</div><div class="menu-desc">查看谁第一个扫码、是否授权</div></div>
+      <span class="menu-arrow">›</span>
+    </div>
+    <div class="menu-item" onclick="goSub('transferPoints')">
+      <div class="menu-icon icon-amber">💰</div>
+      <div class="menu-info"><div class="menu-name">积分管理</div><div class="menu-desc">删除或转移积分到我的账户</div></div>
+      <span class="menu-arrow">›</span>
+    </div>`,
+
+  L2:()=>`
+    <div class="stat-grid">
+      <div class="stat-box"><div class="stat-num">8</div><div class="stat-sub">我的客户</div></div>
+      <div class="stat-box"><div class="stat-num" style="color:#B8750A">2</div><div class="stat-sub">待审批申请</div></div>
+    </div>
+    <div class="section-label">待审批申请</div>
+    <div class="card">
+      ${['陈小明','林美华'].map(name=>`
+      <div class="list-row">
+        <div class="avatar-circle av-amber">${name[0]}</div>
+        <div style="flex:1"><div style="font-size:14px;font-weight:500">${name}</div><div style="font-size:12px;color:#999;margin-top:2px">申请成为我的客户</div></div>
+        <div style="display:flex;gap:6px">
+          <button class="btn btn-outline btn-sm" onclick="alert('已拒绝')">拒绝</button>
+          <button class="btn btn-green btn-sm" onclick="showToast('已授权！${name}可以扫码提取积分')">授权</button>
+        </div>
+      </div>`).join('')}
+    </div>
+    <div class="section-label">已授权客户</div>
+    <div class="card">
+      ${[['王大明','500'],['李小芳','200'],['赵建国','800']].map(([n,p])=>`
+      <div class="list-row">
+        <div class="avatar-circle av-green">${n[0]}</div>
+        <div style="flex:1"><div style="font-size:14px;font-weight:500">${n}</div><div style="font-size:12px;color:#999;margin-top:2px">积分：${p}</div></div>
+        <span class="badge badge-green">已授权</span>
+      </div>`).join('')}
+    </div>`,
+
+  L3:()=>`
+    <div class="card" style="text-align:center;padding:20px 14px">
+      <div class="avatar-circle av-blue" style="width:56px;height:56px;font-size:20px;margin:0 auto 10px">张</div>
+      <div style="font-size:17px;font-weight:600">张客户</div>
+      <div style="margin-top:8px"><span class="badge badge-green">✓ 已授权可扫码</span></div>
+      <div style="font-size:12px;color:#999;margin-top:6px">业务员：李业务</div>
+    </div>
+    <div class="stat-grid">
+      <div class="stat-box"><div class="stat-num" style="color:#07C160">750</div><div class="stat-sub">我的积分</div></div>
+      <div class="stat-box"><div class="stat-num">3</div><div class="stat-sub">可兑礼品数</div></div>
+    </div>
+    <div class="section-label">操作</div>
+    <div class="menu-item" onclick="goSub('scanQR')">
+      <div class="menu-icon icon-green">📷</div>
+      <div class="menu-info"><div class="menu-name">扫码提取积分</div><div class="menu-desc">扫描积分二维码领取</div></div>
+      <span class="menu-arrow">›</span>
+    </div>
+    <div class="menu-item" onclick="goSub('redeemGift')">
+      <div class="menu-icon icon-amber">🎁</div>
+      <div class="menu-info"><div class="menu-name">兑换礼品</div><div class="menu-desc">用积分换取奖励</div></div>
+      <span class="menu-arrow">›</span>
+    </div>
+    <div class="section-label">积分明细</div>
+    <div class="card">
+      ${[['扫码获得','2024-01-15','+500'],['扫码获得','2024-01-12','+250'],['兑换礼品','2024-01-10','-200']].map(([a,d,p])=>`
+      <div class="list-row">
+        <div><div style="font-size:14px">${a}</div><div style="font-size:12px;color:#999;margin-top:2px">${d}</div></div>
+        <span class="${p.startsWith('+')? 'point-plus':'point-minus'}" style="font-size:15px;font-weight:600">${p}</span>
+      </div>`).join('')}
+    </div>`
+};
+
+const subScreens={
+  genQR:()=>`
+    <div class="card">
+      <div style="font-size:15px;font-weight:600;margin-bottom:14px">新建积分二维码</div>
+      <div class="form-group">
+        <div class="form-label">积分数量</div>
+        <input type="number" id="ptInput" value="500" class="form-input" placeholder="输入积分数量">
+      </div>
+      <div class="form-group">
+        <div class="form-label">备注（选填）</div>
+        <input type="text" class="form-input" placeholder="如：2024年春季促销活动">
+      </div>
+      <button class="btn btn-green" onclick="showGeneratedQR()">生成二维码</button>
+    </div>
+    <div id="qrResult" style="display:none">
+      <div class="card">
+        <div class="qr-wrap">
+          <div class="qr-frame">
+            <svg width="130" height="130" viewBox="0 0 130 130" xmlns="http://www.w3.org/2000/svg">
+              <rect width="130" height="130" fill="white"/>
+              <g fill="#1a1a1a">
+                <rect x="6" y="6" width="46" height="46" rx="4" fill="none" stroke="#1a1a1a" stroke-width="5"/>
+                <rect x="18" y="18" width="22" height="22"/>
+                <rect x="78" y="6" width="46" height="46" rx="4" fill="none" stroke="#1a1a1a" stroke-width="5"/>
+                <rect x="90" y="18" width="22" height="22"/>
+                <rect x="6" y="78" width="46" height="46" rx="4" fill="none" stroke="#1a1a1a" stroke-width="5"/>
+                <rect x="18" y="90" width="22" height="22"/>
+                <rect x="78" y="66" width="8" height="8"/><rect x="90" y="66" width="8" height="8"/><rect x="102" y="66" width="8" height="8"/><rect x="114" y="66" width="10" height="8"/>
+                <rect x="78" y="78" width="8" height="8"/><rect x="100" y="78" width="14" height="8"/>
+                <rect x="78" y="90" width="14" height="8"/><rect x="100" y="90" width="8" height="8"/>
+                <rect x="78" y="102" width="8" height="8"/><rect x="92" y="102" width="14" height="8"/>
+                <rect x="78" y="114" width="20" height="10"/><rect x="106" y="114" width="16" height="10"/>
+                <rect x="66" y="66" width="8" height="8"/><rect x="66" y="78" width="8" height="14"/><rect x="66" y="98" width="8" height="8"/><rect x="66" y="110" width="8" height="14"/>
+              </g>
+            </svg>
+          </div>
+          <div style="font-size:14px;color:#666;margin-bottom:4px">积分：<strong id="qrPts" style="color:#1a1a1a;font-size:16px">500</strong></div>
+          <div style="font-size:12px;color:#999">二维码 ID：QR-2024-0012</div>
+          <div style="font-size:12px;color:#999;margin-top:2px">生成时间：2024-01-16 10:30</div>
+        </div>
+        <button class="btn btn-outline" onclick="showToast('已发送打印指令')">🖨️ 打印二维码</button>
+      </div>
+    </div>`,
+
+  scanLog:()=>`
+    <div class="card" style="margin-bottom:10px">
+      <div style="display:flex;align-items:center;gap:8px">
+        <input type="text" class="form-input" placeholder="搜索二维码ID或客户名" style="flex:1">
+      </div>
+    </div>
+    ${[
+      {id:'QR-2024-0010',pts:500,status:'已提取',statusClass:'badge-green',first:'王大明',agent:'李业务',time:'01-15 14:32'},
+      {id:'QR-2024-0009',pts:200,status:'已提取',statusClass:'badge-green',first:'李小芳',agent:'李业务',time:'01-14 09:18'},
+      {id:'QR-2024-0011',pts:300,status:'未授权',statusClass:'badge-amber',first:'未知用户',agent:'—',time:'01-15 16:50'},
+      {id:'QR-2024-0008',pts:1000,status:'未扫码',statusClass:'badge-gray',first:'—',agent:'—',time:'—'},
+    ].map(r=>`
+    <div class="card">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px">
+        <span style="font-size:14px;font-weight:600">${r.id}</span>
+        <span class="badge ${r.statusClass}">${r.status}</span>
+      </div>
+      <div class="info-row"><span class="info-key">积分</span><span style="font-weight:600;color:#07C160">${r.pts}分</span></div>
+      <div class="info-row"><span class="info-key">首扫用户</span><span>${r.first}</span></div>
+      <div class="info-row"><span class="info-key">所属业务员</span><span>${r.agent}</span></div>
+      <div class="info-row"><span class="info-key">扫码时间</span><span>${r.time}</span></div>
+    </div>`).join('')}`,
+
+  transferPoints:()=>`
+    <div class="card">
+      <div style="font-size:13px;color:#999;margin-bottom:4px">我的账户积分</div>
+      <div style="font-size:28px;font-weight:700;color:#07C160">2,800 <span style="font-size:14px;color:#999;font-weight:400">分</span></div>
+      <div class="divider" style="margin:12px 0"></div>
+      <div class="info-row"><span class="info-key">积分池剩余</span><span style="font-weight:600">12,500 分</span></div>
+      <div class="info-row"><span class="info-key">已发出积分</span><span style="font-weight:600">9,700 分</span></div>
+    </div>
+    <div class="section-label">转移积分</div>
+    <div class="card">
+      <div class="form-group">
+        <div class="form-label">选择二维码</div>
+        <select>
+          <option>QR-2024-0008（1000分，未扫）</option>
+          <option>QR-2024-0007（500分，未扫）</option>
+          <option>QR-2024-0006（300分，未扫）</option>
+        </select>
+      </div>
+      <button class="btn btn-green" onclick="showToast('✓ 已将1000积分转入你的账户')" style="margin-bottom:10px">转移积分至我的账户</button>
+      <button class="btn btn-red" onclick="showToast('该二维码已作废')">删除/作废此二维码</button>
+    </div>`,
+
+  scanQR:()=>`
+    <div class="card" style="text-align:center;padding:24px 14px">
+      <div style="font-size:14px;color:#999;margin-bottom:16px">点击下方区域模拟扫码</div>
+      <div class="scan-area" onclick="doScan()">
+        <div style="font-size:40px;margin-bottom:8px">📷</div>
+        <div style="font-size:13px;color:#999">点击模拟扫码</div>
+      </div>
+      <div style="font-size:12px;color:#ccc">对准积分二维码</div>
+    </div>
+    <div id="scanSuccess" style="display:none">
+      <div class="success-banner">
+        <div style="font-size:16px;font-weight:600;color:#07C160;margin-bottom:6px">✓ 积分提取成功！</div>
+        <div style="font-size:32px;font-weight:700;color:#1a1a1a;margin-bottom:4px">+500</div>
+        <div style="font-size:14px;color:#666">积分已存入你的账户</div>
+        <div style="font-size:12px;color:#999;margin-top:8px">此二维码已作废，不可重复使用</div>
+      </div>
+      <div class="card" style="text-align:center">
+        <div style="font-size:13px;color:#999;margin-bottom:4px">当前总积分</div>
+        <div style="font-size:26px;font-weight:700;color:#07C160">1,250</div>
+      </div>
+    </div>
+    <div id="scanFail" style="display:none">
+      <div class="error-banner">
+        <div style="font-size:16px;font-weight:600;color:#C0392B;margin-bottom:6px">⚠ 无法提取积分</div>
+        <div style="font-size:13px;color:#666;margin-bottom:12px">你没有扫码权限，如需了解请联系</div>
+        <div style="font-size:20px;font-weight:700;color:#07C160">400-888-8888</div>
+      </div>
+    </div>`,
+
+  redeemGift:()=>`
+    <div class="card" style="display:flex;align-items:center;justify-content:space-between">
+      <div><div style="font-size:13px;color:#999">当前积分</div><div style="font-size:24px;font-weight:700;color:#07C160;margin-top:2px">750分</div></div>
+      <div style="font-size:32px">💰</div>
+    </div>
+    <div class="section-label">可兑换礼品</div>
+    <div class="card">
+      ${[
+        {name:'购物卡 50元',pts:200,icon:'🛒',enough:true},
+        {name:'精品保温杯',pts:500,icon:'☕',enough:true},
+        {name:'蓝牙耳机',pts:800,icon:'🎧',enough:false},
+        {name:'购物卡 200元',pts:1000,icon:'💳',enough:false},
+      ].map(g=>`
+      <div class="gift-item">
+        <div style="font-size:24px;margin-right:12px">${g.icon}</div>
+        <div style="flex:1">
+          <div style="font-size:14px;font-weight:500">${g.name}</div>
+          <div style="font-size:12px;color:#999;margin-top:2px">所需：${g.pts}积分</div>
+        </div>
+        ${g.enough
+          ? `<button class="btn btn-green btn-sm" onclick="showToast('兑换成功！${g.name}将尽快发货')">兑换</button>`
+          : `<button class="btn btn-outline btn-sm" style="color:#ccc;border-color:#e0e0e0" onclick="showToast('积分不足')">积分不足</button>`}
+      </div>`).join('')}
+    </div>`
+};
+
+let scanTurn=0;
+function doScan(){
+  scanTurn++;
+  if(scanTurn%2===1){
+    document.getElementById('scanSuccess').style.display='block';
+    document.getElementById('scanFail').style.display='none';
+  } else {
+    document.getElementById('scanSuccess').style.display='none';
+    document.getElementById('scanFail').style.display='block';
+  }
+}
+
+function showGeneratedQR(){
+  const pts=document.getElementById('ptInput').value||500;
+  document.getElementById('qrPts').textContent=pts;
+  document.getElementById('qrResult').style.display='block';
+  document.getElementById('qrResult').scrollIntoView({behavior:'smooth'});
+}
+
+function showToast(msg){
+  const t=document.createElement('div');
+  t.textContent=msg;
+  t.style.cssText='position:fixed;bottom:80px;left:50%;transform:translateX(-50%);background:rgba(0,0,0,0.75);color:#fff;padding:10px 20px;border-radius:20px;font-size:13px;z-index:9999;white-space:nowrap;max-width:80vw;text-align:center';
+  document.body.appendChild(t);
+  setTimeout(()=>t.remove(),2500);
+}
+
+renderMain();
+</script>
+</body>
+</html>
