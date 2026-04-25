@@ -1,0 +1,598 @@
+
+<h2 class="sr-only">积分系统V4原型，微信登录+管理员密码登录，含首次绑定流程，三角色完整页面</h2>
+<style>
+*{box-sizing:border-box;margin:0;padding:0;}
+.wrap{max-width:390px;margin:0 auto;padding:10px 0;}
+.rtabs{display:flex;gap:6px;padding:0 10px 10px;}
+.rtab{flex:1;padding:8px 4px;border-radius:8px;border:0.5px solid var(--color-border-tertiary);font-size:12px;font-weight:500;text-align:center;cursor:pointer;background:var(--color-background-secondary);color:var(--color-text-secondary);}
+.rtab.on{background:#185FA5;color:#fff;border-color:#185FA5;}
+.phone{background:var(--color-background-primary);border:0.5px solid var(--color-border-tertiary);border-radius:24px;overflow:hidden;min-height:700px;position:relative;}
+.sbar{background:#1a1a2e;padding:10px 16px 6px;display:flex;justify-content:space-between;}
+.sbar span{color:#fff;font-size:11px;font-weight:500;}
+.nbar{background:var(--color-background-primary);padding:10px 14px 8px;display:flex;align-items:center;gap:8px;border-bottom:0.5px solid var(--color-border-tertiary);}
+.back{font-size:13px;color:#185FA5;cursor:pointer;}
+.ntitle{font-size:15px;font-weight:500;color:var(--color-text-primary);}
+.scr{display:none;flex-direction:column;}
+.scr.on{display:flex;}
+.banner{background:#185FA5;padding:16px;margin:10px;border-radius:12px;}
+.btitle{color:#fff;font-size:16px;font-weight:500;}
+.bsub{color:rgba(255,255,255,0.75);font-size:12px;margin-top:2px;}
+.stats{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;padding:0 10px 8px;}
+.sc{background:var(--color-background-secondary);border-radius:8px;padding:12px;text-align:center;}
+.snum{font-size:22px;font-weight:500;color:var(--color-text-primary);}
+.slbl{font-size:11px;color:var(--color-text-secondary);margin-top:2px;}
+.sec{font-size:13px;font-weight:500;color:var(--color-text-secondary);padding:8px 12px 4px;}
+.gmenu{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;padding:0 10px 10px;}
+.mi{background:var(--color-background-secondary);border-radius:8px;padding:14px 8px;text-align:center;cursor:pointer;border:0.5px solid var(--color-border-tertiary);}
+.mi:hover{background:var(--color-background-tertiary);}
+.mico{font-size:18px;margin-bottom:4px;}
+.mlbl{font-size:11px;color:var(--color-text-secondary);}
+.scan-wrap{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:24px;}
+.ring{width:150px;height:150px;border:2px dashed var(--color-border-secondary);border-radius:50%;display:flex;align-items:center;justify-content:center;cursor:pointer;margin-bottom:14px;}
+.ring:hover{border-color:#185FA5;}
+.inner{width:112px;height:112px;background:var(--color-background-secondary);border-radius:50%;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;}
+.ilbl{font-size:12px;color:var(--color-text-secondary);}
+.res{background:var(--color-background-secondary);border-radius:12px;padding:14px;width:100%;text-align:center;}
+.rpts{font-size:28px;font-weight:500;color:#3B6D11;}
+.rsub{font-size:12px;color:var(--color-text-secondary);margin-top:4px;}
+.ulist{padding:0 10px;}
+.ui{background:var(--color-background-primary);border:0.5px solid var(--color-border-tertiary);border-radius:8px;padding:10px 12px;margin-bottom:6px;display:flex;align-items:center;gap:10px;}
+.av{width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:500;flex-shrink:0;}
+.avs{background:#EAF3DE;color:#27500A;}
+.avm{background:#FAEEDA;color:#633806;}
+.uinfo{flex:1;}
+.uname{font-size:13px;font-weight:500;color:var(--color-text-primary);}
+.umeta{font-size:11px;color:var(--color-text-secondary);margin-top:1px;}
+.badge{display:inline-block;font-size:10px;padding:1px 6px;border-radius:20px;margin-right:4px;}
+.bs{background:#EAF3DE;color:#3B6D11;}
+.bm{background:#FAEEDA;color:#854F0B;}
+.loglist{padding:0 10px;flex:1;}
+.li{border-bottom:0.5px solid var(--color-border-tertiary);padding:10px 0;display:flex;align-items:center;gap:8px;}
+.dot{width:8px;height:8px;border-radius:50%;flex-shrink:0;}
+.dg{background:#639922;}.dr{background:#A32D2D;}.db{background:#185FA5;}.da{background:#BA7517;}
+.linfo{flex:1;}
+.ln{font-size:13px;color:var(--color-text-primary);}
+.lt{font-size:11px;color:var(--color-text-secondary);margin-top:1px;}
+.lp{font-size:13px;font-weight:500;white-space:nowrap;}
+.pos{color:#3B6D11;}.neg{color:#A32D2D;}
+.fbar{display:flex;gap:6px;padding:8px 10px;}
+.fbar select{flex:1;padding:6px 8px;border-radius:8px;border:0.5px solid var(--color-border-tertiary);background:var(--color-background-primary);font-size:12px;color:var(--color-text-primary);}
+.pcard{margin:10px;background:var(--color-background-secondary);border-radius:12px;padding:16px;text-align:center;}
+.pav{width:56px;height:56px;border-radius:50%;margin:0 auto 8px;display:flex;align-items:center;justify-content:center;font-size:20px;font-weight:500;}
+.pname{font-size:16px;font-weight:500;color:var(--color-text-primary);}
+.prole{font-size:12px;color:var(--color-text-secondary);margin-top:2px;}
+.ppts{font-size:26px;font-weight:500;color:#185FA5;margin-top:10px;}
+.pplbl{font-size:11px;color:var(--color-text-secondary);}
+.ilist{margin:0 10px;}
+.ir{display:flex;justify-content:space-between;align-items:center;padding:10px 12px;background:var(--color-background-primary);border:0.5px solid var(--color-border-tertiary);border-radius:8px;margin-bottom:6px;}
+.ik{font-size:12px;color:var(--color-text-secondary);}
+.iv{font-size:12px;font-weight:500;color:var(--color-text-primary);}
+.btn{width:calc(100% - 20px);margin:6px 10px;padding:12px;border-radius:8px;border:0.5px solid var(--color-border-secondary);background:var(--color-background-primary);font-size:13px;font-weight:500;cursor:pointer;color:var(--color-text-primary);}
+.btn:hover{background:var(--color-background-secondary);}
+.btnd{color:#A32D2D;border-color:#F7C1C1;}
+.btnp{background:#185FA5;color:#fff;border-color:#185FA5;}
+.btnp:hover{background:#0C447C;}
+.btnwx{background:#07C160;color:#fff;border-color:#07C160;display:flex;align-items:center;justify-content:center;gap:8px;}
+.btnwx:hover{background:#06ad56;}
+.card{margin:10px;background:var(--color-background-primary);border:0.5px solid var(--color-border-tertiary);border-radius:12px;overflow:hidden;}
+.ch{padding:12px 14px;border-bottom:0.5px solid var(--color-border-tertiary);}
+.cb{padding:12px 14px;}
+.tr{display:flex;justify-content:space-between;padding:6px 0;border-bottom:0.5px solid var(--color-border-tertiary);}
+.tr:last-child{border:none;}
+.tk{font-size:12px;color:var(--color-text-secondary);}
+.tv{font-size:12px;font-weight:500;color:var(--color-text-primary);}
+.pill{display:inline-block;font-size:11px;padding:2px 8px;border-radius:20px;}
+.pill-g{background:#EAF3DE;color:#27500A;}
+.pill-r{background:#FCEBEB;color:#A32D2D;}
+.pill-gr{background:#F1EFE8;color:#444441;}
+.dist-row{display:flex;justify-content:space-between;padding:5px 0;}
+.dist-row:not(:last-child){border-bottom:0.5px solid var(--color-border-tertiary);}
+.modal-ov{position:absolute;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.4);display:flex;align-items:flex-end;z-index:10;}
+.sheet{background:var(--color-background-primary);border-radius:16px 16px 0 0;padding:16px;width:100%;}
+.stitle{font-size:15px;font-weight:500;margin-bottom:4px;color:var(--color-text-primary);}
+.ssub{font-size:12px;color:var(--color-text-secondary);margin-bottom:12px;}
+.sinput{width:100%;padding:10px;border:0.5px solid var(--color-border-secondary);border-radius:8px;font-size:14px;margin-bottom:8px;color:var(--color-text-primary);background:var(--color-background-primary);}
+.sbtns{display:flex;gap:8px;}
+.sbtns button{flex:1;padding:10px;border-radius:8px;font-size:13px;cursor:pointer;border:0.5px solid var(--color-border-secondary);background:var(--color-background-primary);color:var(--color-text-primary);}
+.sbtns .ok{background:#185FA5;color:#fff;border-color:#185FA5;}
+.sbtns .okr{background:#A32D2D;color:#fff;border-color:#A32D2D;}
+.step-bar{display:flex;align-items:center;padding:14px 16px;gap:0;}
+.step{display:flex;flex-direction:column;align-items:center;flex:1;}
+.sdot{width:24px;height:24px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:500;}
+.sdot-done{background:#185FA5;color:#fff;}
+.sdot-cur{background:#185FA5;color:#fff;}
+.sdot-wait{background:var(--color-background-secondary);color:var(--color-text-secondary);border:0.5px solid var(--color-border-tertiary);}
+.sline{flex:1;height:1px;background:var(--color-border-tertiary);margin-top:-12px;}
+.sline-done{background:#185FA5;}
+.slabel{font-size:10px;color:var(--color-text-secondary);margin-top:4px;text-align:center;}
+.slabel-cur{color:#185FA5;font-weight:500;}
+.wx-icon{width:20px;height:20px;display:inline-block;}
+.notice{margin:0 10px;padding:10px 12px;background:#EAF3DE;border-radius:8px;font-size:12px;color:#27500A;}
+.notice-warn{background:#FFF8E1;color:#7B5800;}
+.otp-row{display:flex;gap:8px;margin-bottom:8px;}
+.otp-row input{flex:1;padding:10px;border:0.5px solid var(--color-border-secondary);border-radius:8px;font-size:14px;color:var(--color-text-primary);background:var(--color-background-primary);}
+.otp-row button{padding:10px 12px;border-radius:8px;border:0.5px solid var(--color-border-secondary);background:var(--color-background-primary);font-size:12px;cursor:pointer;color:#185FA5;white-space:nowrap;}
+.qsec label{font-size:12px;color:var(--color-text-secondary);display:block;margin-bottom:4px;}
+.qsec select,.qsec input{width:100%;padding:8px;border:0.5px solid var(--color-border-tertiary);border-radius:8px;font-size:13px;background:var(--color-background-primary);color:var(--color-text-primary);margin-bottom:10px;}
+</style>
+
+<div class="wrap">
+<div style="text-align:center;margin-bottom:8px;font-size:11px;color:var(--color-text-secondary);">选择角色查看对应界面</div>
+<div class="rtabs">
+  <div class="rtab on" onclick="sw('admin')">管理员</div>
+  <div class="rtab" onclick="sw('salesman')">业务员</div>
+  <div class="rtab" onclick="sw('merchant')">商家</div>
+</div>
+
+<div class="phone">
+  <div class="sbar"><span>9:41</span><span>积分系统</span><span>100%</span></div>
+
+  <!-- ══════════════════════════════════
+       登录页：管理员（账号密码）
+  ══════════════════════════════════ -->
+  <div class="scr on" id="login-admin">
+    <div style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:24px;">
+      <div style="width:56px;height:56px;background:#E6F1FB;border-radius:16px;display:flex;align-items:center;justify-content:center;margin-bottom:12px;">
+        <span style="font-size:26px;">🏭</span>
+      </div>
+      <div style="font-size:22px;font-weight:500;color:#185FA5;margin-bottom:4px;">积分系统</div>
+      <div style="font-size:13px;color:var(--color-text-secondary);margin-bottom:28px;">xxxx品牌</div>
+      <div style="width:100%;background:var(--color-background-secondary);border-radius:12px;padding:16px;margin-bottom:16px;">
+        <div style="font-size:12px;color:var(--color-text-secondary);margin-bottom:10px;text-align:center;">管理员登录</div>
+        <input class="sinput" placeholder="管理员账号" style="margin-bottom:8px;">
+        <input class="sinput" type="password" placeholder="密码" style="margin-bottom:12px;">
+        <button class="btnp btn" style="margin:0;width:100%;" onclick="go('a-home')">登录</button>
+      </div>
+      <div style="width:100%;text-align:center;font-size:12px;color:var(--color-text-secondary);margin-bottom:12px;">—— 业务员 / 商家 ——</div>
+      <button class="btnwx btn" style="margin:0;width:100%;" onclick="go('login-wx-check')">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M8.69 11.52c-.57 0-1.03-.46-1.03-1.03s.46-1.03 1.03-1.03 1.03.46 1.03 1.03-.46 1.03-1.03 1.03zm4.95 0c-.57 0-1.03-.46-1.03-1.03s.46-1.03 1.03-1.03 1.03.46 1.03 1.03-.46 1.03-1.03 1.03zM12 2C6.48 2 2 6.02 2 11c0 2.87 1.37 5.43 3.53 7.16L4.5 21l3.27-1.63C9.04 19.77 10.49 20 12 20c5.52 0 10-4.02 10-9S17.52 2 12 2z"/></svg>
+        微信一键登录
+      </button>
+      <div style="font-size:11px;color:var(--color-text-secondary);margin-top:12px;">业务员/商家请使用微信登录</div>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════
+       微信登录中间态：检查openid
+  ══════════════════════════════════ -->
+  <div class="scr" id="login-wx-check">
+    <div style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:24px;">
+      <div style="width:64px;height:64px;background:#E8F5E9;border-radius:50%;display:flex;align-items:center;justify-content:center;margin-bottom:16px;">
+        <svg width="32" height="32" viewBox="0 0 24 24" fill="#07C160"><path d="M8.69 11.52c-.57 0-1.03-.46-1.03-1.03s.46-1.03 1.03-1.03 1.03.46 1.03 1.03-.46 1.03-1.03 1.03zm4.95 0c-.57 0-1.03-.46-1.03-1.03s.46-1.03 1.03-1.03 1.03.46 1.03 1.03-.46 1.03-1.03 1.03zM12 2C6.48 2 2 6.02 2 11c0 2.87 1.37 5.43 3.53 7.16L4.5 21l3.27-1.63C9.04 19.77 10.49 20 12 20c5.52 0 10-4.02 10-9S17.52 2 12 2z"/></svg>
+      </div>
+      <div style="font-size:15px;font-weight:500;color:var(--color-text-primary);margin-bottom:6px;">微信授权中</div>
+      <div style="font-size:12px;color:var(--color-text-secondary);text-align:center;margin-bottom:28px;">正在验证您的微信身份...</div>
+      <div style="display:flex;gap:10px;width:100%;">
+        <button class="btn" style="flex:1;margin:0;" onclick="go('login-admin')">返回</button>
+        <button class="btnp btn" style="flex:1;margin:0;" onclick="go('login-wx-new')">首次使用（演示）</button>
+        <button class="btnp btn" style="flex:1;margin:0;background:#07C160;border-color:#07C160;" onclick="go('s-home')">已有账号（演示）</button>
+      </div>
+      <div style="font-size:11px;color:var(--color-text-secondary);margin-top:16px;text-align:center;">实际运行时系统自动判断，无需手动选择</div>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════
+       首次绑定流程（Step 1/2/3）
+  ══════════════════════════════════ -->
+  <div class="scr" id="login-wx-new">
+    <div class="nbar"><span class="back" onclick="go('login-wx-check')">← 返回</span><span class="ntitle">身份绑定</span></div>
+    <div class="step-bar">
+      <div class="step">
+        <div class="sdot sdot-done">1</div>
+        <div class="slabel">微信授权</div>
+      </div>
+      <div class="sline sline-done"></div>
+      <div class="step">
+        <div class="sdot sdot-cur">2</div>
+        <div class="slabel slabel-cur">手机验证</div>
+      </div>
+      <div class="sline"></div>
+      <div class="step">
+        <div class="sdot sdot-wait">3</div>
+        <div class="slabel">完成绑定</div>
+      </div>
+    </div>
+    <div style="padding:0 16px;">
+      <div style="font-size:14px;font-weight:500;color:var(--color-text-primary);margin-bottom:4px;">验证手机号</div>
+      <div style="font-size:12px;color:var(--color-text-secondary);margin-bottom:14px;">请输入业务员已为您登记的手机号</div>
+      <div class="otp-row">
+        <input placeholder="手机号" type="tel">
+        <button onclick="sendOtp(this)">发送验证码</button>
+      </div>
+      <input class="sinput" placeholder="请输入验证码" id="otp-input">
+      <div id="bind-err" style="font-size:12px;color:#A32D2D;margin-bottom:8px;display:none;">该手机号未开通，请联系您的业务员</div>
+      <div style="display:flex;gap:8px;">
+        <button class="btn" style="flex:1;margin:0;" onclick="showBindFail()">验证（未登记）</button>
+        <button class="btnp btn" style="flex:1;margin:0;" onclick="go('login-wx-done')">验证（已登记）</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="scr" id="login-wx-done">
+    <div style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:24px;">
+      <div style="width:64px;height:64px;background:#EAF3DE;border-radius:50%;display:flex;align-items:center;justify-content:center;margin-bottom:16px;">
+        <span style="font-size:28px;">✓</span>
+      </div>
+      <div style="font-size:16px;font-weight:500;color:#27500A;margin-bottom:6px;">绑定成功</div>
+      <div style="font-size:13px;color:var(--color-text-secondary);text-align:center;margin-bottom:6px;">您已成功绑定为</div>
+      <div style="font-size:15px;font-weight:500;color:var(--color-text-primary);margin-bottom:4px;">商家账号</div>
+      <div style="font-size:12px;color:var(--color-text-secondary);margin-bottom:24px;">归属业务员：张业务A</div>
+      <div class="notice" style="width:100%;margin:0 0 20px;text-align:center;">下次打开小程序将自动登录，无需重复操作</div>
+      <button class="btnp btn" style="margin:0;width:100%;" onclick="go('m-home')">进入系统</button>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════
+       管理员端
+  ══════════════════════════════════ -->
+  <div class="scr" id="a-home">
+    <div class="nbar"><span class="ntitle">管理员中心</span></div>
+    <div class="banner"><div class="btitle">xxxx品牌</div><div class="bsub">专注品质 · 诚信合作</div></div>
+    <div class="stats">
+      <div class="sc"><div class="snum">2,580</div><div class="slbl">我的积分</div></div>
+      <div class="sc"><div class="snum">12</div><div class="slbl">业务员人数</div></div>
+      <div class="sc"><div class="snum">48</div><div class="slbl">商家人数</div></div>
+    </div>
+    <div class="sec">功能菜单</div>
+    <div class="gmenu">
+      <div class="mi" onclick="go('a-scan')"><div class="mico">📷</div><div class="mlbl">扫码得积分</div></div>
+      <div class="mi" onclick="go('a-deduct')"><div class="mico">✂️</div><div class="mlbl">积分核销</div></div>
+      <div class="mi" onclick="go('a-logs')"><div class="mico">📋</div><div class="mlbl">积分流水</div></div>
+      <div class="mi" onclick="go('a-trace')"><div class="mico">🔍</div><div class="mlbl">溯源查询</div></div>
+      <div class="mi" onclick="go('a-qrcode')"><div class="mico">🏷</div><div class="mlbl">二维码生成</div></div>
+      <div class="mi" onclick="go('a-users')"><div class="mico">👤</div><div class="mlbl">业务员管理</div></div>
+    </div>
+    <button class="btn btnd" onclick="go('login-admin')" style="margin-top:4px;">退出登录</button>
+  </div>
+
+  <div class="scr" id="a-scan">
+    <div class="nbar"><span class="back" onclick="go('a-home')">← 返回</span><span class="ntitle">扫码得积分</span></div>
+    <div class="scan-wrap">
+      <div class="ring" onclick="doScan('admin')"><div class="inner"><span style="font-size:22px;">📷</span><span class="ilbl">点击扫码</span></div></div>
+      <div id="a-scan-res"></div>
+    </div>
+  </div>
+
+  <div class="scr" id="a-deduct">
+    <div class="nbar"><span class="back" onclick="go('a-home')">← 返回</span><span class="ntitle">积分核销</span></div>
+    <div class="sec">选择用户</div>
+    <div class="ulist">
+      <div class="ui"><div class="av avs">张A</div><div class="uinfo"><div class="uname"><span class="badge bs">业务员</span>张业务A</div><div class="umeta">当前积分：1,240</div></div><span style="font-size:11px;padding:3px 8px;border-radius:12px;background:#FCEBEB;color:#A32D2D;cursor:pointer;" onclick="openDeduct('张业务A',1240)">核销</span></div>
+      <div class="ui"><div class="av avs">李B</div><div class="uinfo"><div class="uname"><span class="badge bs">业务员</span>李业务B</div><div class="umeta">当前积分：890</div></div><span style="font-size:11px;padding:3px 8px;border-radius:12px;background:#FCEBEB;color:#A32D2D;cursor:pointer;" onclick="openDeduct('李业务B',890)">核销</span></div>
+      <div class="ui"><div class="av avm">王C</div><div class="uinfo"><div class="uname"><span class="badge bm">商家</span>王商家C</div><div class="umeta">当前积分：560</div></div><span style="font-size:11px;padding:3px 8px;border-radius:12px;background:#FCEBEB;color:#A32D2D;cursor:pointer;" onclick="openDeduct('王商家C',560)">核销</span></div>
+      <div class="ui"><div class="av avm">陈D</div><div class="uinfo"><div class="uname"><span class="badge bm">商家</span>陈商家D</div><div class="umeta">当前积分：320</div></div><span style="font-size:11px;padding:3px 8px;border-radius:12px;background:#FCEBEB;color:#A32D2D;cursor:pointer;" onclick="openDeduct('陈商家D',320)">核销</span></div>
+    </div>
+    <div id="deduct-modal"></div>
+  </div>
+
+  <div class="scr" id="a-logs">
+    <div class="nbar"><span class="back" onclick="go('a-home')">← 返回</span><span class="ntitle">积分流水</span></div>
+    <div class="fbar">
+      <select><option>全部分类</option><option>饮料类</option><option>食品类</option></select>
+      <select><option>全部类型</option><option>扫码得积分</option><option>上级分配</option><option>核销</option></select>
+    </div>
+    <div class="loglist">
+      <div class="li"><div class="dot db"></div><div class="linfo"><div class="ln">上级分配 · 矿泉水500ml</div><div class="lt">王商家C扫码 · 01-15 14:32</div></div><div class="lp pos">+2</div></div>
+      <div class="li"><div class="dot dg"></div><div class="linfo"><div class="ln">扫码得积分 · 橙汁330ml</div><div class="lt">管理员扫码 · 01-15 11:20</div></div><div class="lp pos">+8</div></div>
+      <div class="li"><div class="dot dr"></div><div class="linfo"><div class="ln">积分核销 · 张业务A</div><div class="lt">管理员操作 · 01-14 16:00</div></div><div class="lp neg">-100</div></div>
+      <div class="li"><div class="dot db"></div><div class="linfo"><div class="ln">上级分配 · 薯片大包</div><div class="lt">李业务B扫码 · 01-14 09:12</div></div><div class="lp pos">+2</div></div>
+    </div>
+  </div>
+
+  <div class="scr" id="a-trace">
+    <div class="nbar"><span class="back" onclick="resetTrace()">← 返回</span><span class="ntitle">溯源查询</span></div>
+    <div id="trace-ui">
+      <div class="scan-wrap">
+        <div class="ring" onclick="alert('演示：请点击下方按钮')"><div class="inner"><span style="font-size:22px;">🔍</span><span class="ilbl">扫码溯源</span></div></div>
+        <div style="font-size:12px;color:var(--color-text-secondary);text-align:center;margin-bottom:16px;">扫描任意二维码查看溯源记录</div>
+        <div style="width:100%;"><div style="font-size:11px;color:var(--color-text-secondary);text-align:center;margin-bottom:8px;">演示三种状态</div>
+        <div style="display:flex;gap:6px;">
+          <button style="flex:1;padding:8px;border-radius:8px;border:0.5px solid var(--color-border-secondary);background:var(--color-background-secondary);font-size:11px;cursor:pointer;color:#444441;" onclick="showTrace(0)">未使用</button>
+          <button style="flex:1;padding:8px;border-radius:8px;border:0.5px solid var(--color-border-secondary);background:var(--color-background-secondary);font-size:11px;cursor:pointer;color:#27500A;" onclick="showTrace(1)">已使用</button>
+          <button style="flex:1;padding:8px;border-radius:8px;border:0.5px solid var(--color-border-secondary);background:var(--color-background-secondary);font-size:11px;cursor:pointer;color:#A32D2D;" onclick="showTrace(2)">已作废</button>
+        </div></div>
+      </div>
+    </div>
+    <div id="trace-res" style="display:none;padding-bottom:16px;"></div>
+  </div>
+
+  <div class="scr" id="a-qrcode">
+    <div class="nbar"><span class="back" onclick="go('a-home')">← 返回</span><span class="ntitle">二维码生成</span></div>
+    <div style="margin:10px;background:var(--color-background-secondary);border-radius:12px;padding:12px;">
+      <div style="font-size:13px;font-weight:500;margin-bottom:10px;color:var(--color-text-primary);">选择已有商品</div>
+      <div class="qsec">
+        <label>商品分类</label>
+        <select id="c-sel" onchange="filterP()"><option value="">请选择分类</option><option value="d">饮料类</option><option value="f">食品类</option></select>
+        <label>选择商品</label>
+        <select id="p-sel"><option>请先选择分类</option></select>
+        <label>生成数量</label>
+        <input type="number" value="10" min="1">
+        <button class="btnp btn" style="margin:0;width:100%;" onclick="doGen('exist')">生成二维码</button>
+      </div>
+    </div>
+    <div style="text-align:center;font-size:12px;color:var(--color-text-secondary);margin-bottom:8px;">—— 或者 ——</div>
+    <div style="margin:0 10px 10px;background:var(--color-background-secondary);border-radius:12px;padding:12px;">
+      <div style="font-size:13px;font-weight:500;margin-bottom:10px;color:var(--color-text-primary);">自定义商品</div>
+      <div class="qsec">
+        <label>商品分类</label>
+        <select><option>饮料类</option><option>食品类</option></select>
+        <label>自定义商品名称</label>
+        <input type="text" id="cname" placeholder="如：椰汁330ml">
+        <label>积分值（每件）</label>
+        <input type="number" id="cpts" value="10" min="1">
+        <label>生成数量</label>
+        <input type="number" id="cqty" value="10" min="1">
+        <button class="btnp btn" style="margin:0;width:100%;" onclick="doGen('custom')">创建商品并生成</button>
+      </div>
+    </div>
+    <div id="gen-res"></div>
+  </div>
+
+  <!-- 管理员 - 业务员管理（只有新增业务员，无商家管理） -->
+  <div class="scr" id="a-users">
+    <div class="nbar"><span class="back" onclick="go('a-home')">← 返回</span><span class="ntitle">业务员管理</span><span style="margin-left:auto;font-size:13px;color:#185FA5;cursor:pointer;" onclick="openAddSalesman()">+ 新增</span></div>
+    <div class="notice notice-warn" style="margin:10px;">商家账号由商家首次微信登录时自动创建，业务员需提前登记商家手机号</div>
+    <div class="sec">业务员列表（12人）</div>
+    <div class="ulist">
+      <div class="ui"><div class="av avs">张A</div><div class="uinfo"><div class="uname">张业务A</div><div class="umeta">138****0001 · 已登记商家：6个</div></div><span style="font-size:11px;padding:3px 8px;border-radius:12px;background:#FCEBEB;color:#A32D2D;cursor:pointer;">停用</span></div>
+      <div class="ui"><div class="av avs">李B</div><div class="uinfo"><div class="uname">李业务B</div><div class="umeta">138****0002 · 已登记商家：8个</div></div><span style="font-size:11px;padding:3px 8px;border-radius:12px;background:#FCEBEB;color:#A32D2D;cursor:pointer;">停用</span></div>
+      <div class="ui"><div class="av avs">刘C</div><div class="uinfo"><div class="uname">刘业务C</div><div class="umeta">138****0003 · 已登记商家：4个</div></div><span style="font-size:11px;padding:3px 8px;border-radius:12px;background:#FCEBEB;color:#A32D2D;cursor:pointer;">停用</span></div>
+    </div>
+    <div id="add-sal-modal"></div>
+  </div>
+
+  <!-- ══════════════════════════════════
+       业务员端
+  ══════════════════════════════════ -->
+  <div class="scr" id="s-home">
+    <div class="nbar"><span class="ntitle">业务员中心</span></div>
+    <div class="banner"><div class="btitle">xxxx品牌</div><div class="bsub">专注品质 · 诚信合作</div></div>
+    <div class="pcard">
+      <div class="pav avs">张A</div>
+      <div class="pname">张业务A</div>
+      <div class="prole">业务员 · 微信已绑定</div>
+      <div class="ppts">1,240</div><div class="pplbl">当前积分</div>
+    </div>
+    <div class="sec">快捷功能</div>
+    <div class="gmenu">
+      <div class="mi" onclick="go('s-scan')"><div class="mico">📷</div><div class="mlbl">扫码得积分</div></div>
+      <div class="mi" onclick="go('s-logs')"><div class="mico">📋</div><div class="mlbl">积分流水</div></div>
+    </div>
+    <div class="sec">我的商家预登记</div>
+    <div class="ulist">
+      <div class="ui"><div class="av avm">王C</div><div class="uinfo"><div class="uname">王商家C</div><div class="umeta">138****0010 · <span style="color:#3B6D11;">已注册</span></div></div></div>
+      <div class="ui"><div class="av avm">赵E</div><div class="uinfo"><div class="uname">赵商家E</div><div class="umeta">138****0011 · <span style="color:#3B6D11;">已注册</span></div></div></div>
+      <div class="ui" style="border-style:dashed;cursor:pointer;" onclick="openAddMerchant()">
+        <div style="width:36px;height:36px;border-radius:50%;background:var(--color-background-secondary);display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0;">+</div>
+        <div class="uinfo"><div class="uname" style="color:#185FA5;">登记新商家手机号</div><div class="umeta">商家首次登录后自动绑定</div></div>
+      </div>
+    </div>
+    <button class="btn btnd" onclick="go('login-admin')">退出登录</button>
+    <div id="add-merch-modal"></div>
+  </div>
+
+  <div class="scr" id="s-scan">
+    <div class="nbar"><span class="back" onclick="go('s-home')">← 返回</span><span class="ntitle">扫码得积分</span></div>
+    <div class="scan-wrap">
+      <div class="ring" onclick="doScan('sales')"><div class="inner"><span style="font-size:22px;">📷</span><span class="ilbl">点击扫码</span></div></div>
+      <div id="s-scan-res"></div>
+    </div>
+  </div>
+
+  <div class="scr" id="s-logs">
+    <div class="nbar"><span class="back" onclick="go('s-home')">← 返回</span><span class="ntitle">积分流水</span></div>
+    <div class="fbar"><select><option>全部分类</option><option>饮料类</option></select></div>
+    <div class="loglist">
+      <div class="li"><div class="dot dg"></div><div class="linfo"><div class="ln">扫码得积分 · 矿泉水500ml</div><div class="lt">自己扫码 · 01-15 10:20</div></div><div class="lp pos">+8</div></div>
+      <div class="li"><div class="dot db"></div><div class="linfo"><div class="ln">商家分成 · 橙汁330ml</div><div class="lt">王商家C扫码 · 01-15 09:05</div></div><div class="lp pos">+2</div></div>
+      <div class="li"><div class="dot dr"></div><div class="linfo"><div class="ln">积分核销</div><div class="lt">管理员操作 · 01-14 16:00</div></div><div class="lp neg">-200</div></div>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════
+       商家端
+  ══════════════════════════════════ -->
+  <div class="scr" id="m-home">
+    <div class="nbar"><span class="ntitle">商家中心</span></div>
+    <div class="banner"><div class="btitle">xxxx品牌</div><div class="bsub">专注品质 · 诚信合作</div></div>
+    <div class="pcard">
+      <div class="pav avm">王C</div>
+      <div class="pname">王商家C</div>
+      <div class="prole">商家 · 归属业务员：张业务A</div>
+      <div class="ppts">560</div><div class="pplbl">当前积分</div>
+    </div>
+    <div class="sec">快捷功能</div>
+    <div class="gmenu">
+      <div class="mi" onclick="go('m-scan')"><div class="mico">📷</div><div class="mlbl">扫码得积分</div></div>
+      <div class="mi" onclick="go('m-logs')"><div class="mico">📋</div><div class="mlbl">积分流水</div></div>
+    </div>
+    <div class="ilist">
+      <div class="ir"><span class="ik">手机号</span><span class="iv">138****0010</span></div>
+      <div class="ir"><span class="ik">归属业务员</span><span class="iv">张业务A</span></div>
+      <div class="ir"><span class="ik">微信绑定</span><span class="iv" style="color:#07C160;">已绑定</span></div>
+    </div>
+    <button class="btn btnd" onclick="go('login-admin')" style="margin-top:8px;">退出登录</button>
+  </div>
+
+  <div class="scr" id="m-scan">
+    <div class="nbar"><span class="back" onclick="go('m-home')">← 返回</span><span class="ntitle">扫码得积分</span></div>
+    <div class="scan-wrap">
+      <div class="ring" onclick="doScan('merch')"><div class="inner"><span style="font-size:22px;">📷</span><span class="ilbl">点击扫码</span></div></div>
+      <div id="m-scan-res"></div>
+    </div>
+  </div>
+
+  <div class="scr" id="m-logs">
+    <div class="nbar"><span class="back" onclick="go('m-home')">← 返回</span><span class="ntitle">积分流水</span></div>
+    <div class="fbar"><select><option>全部分类</option><option>饮料类</option></select></div>
+    <div class="loglist">
+      <div class="li"><div class="dot dg"></div><div class="linfo"><div class="ln">扫码得积分 · 矿泉水500ml</div><div class="lt">01-15 14:32</div></div><div class="lp pos">+8</div></div>
+      <div class="li"><div class="dot dg"></div><div class="linfo"><div class="ln">扫码得积分 · 橙汁330ml</div><div class="lt">01-15 10:18</div></div><div class="lp pos">+6</div></div>
+      <div class="li"><div class="dot dr"></div><div class="linfo"><div class="ln">积分核销</div><div class="lt">管理员操作 · 01-13 09:30</div></div><div class="lp neg">-100</div></div>
+    </div>
+  </div>
+
+</div>
+</div>
+
+<script>
+var prods = {d:[['矿泉水500ml','10'],['橙汁330ml','8']],f:[['薯片大包','12'],['饼干礼盒','15']]};
+
+function go(id){
+  document.querySelectorAll('.scr').forEach(function(s){s.classList.remove('on');});
+  var el=document.getElementById(id);
+  if(el) el.classList.add('on');
+}
+
+function sw(role){
+  document.querySelectorAll('.rtab').forEach(function(t,i){
+    t.classList.toggle('on',['admin','salesman','merchant'][i]===role);
+  });
+  if(role==='admin') go('login-admin');
+  else if(role==='salesman') go('s-home');
+  else go('m-home');
+}
+
+function doScan(role){
+  var map={admin:'a-scan-res',sales:'s-scan-res',merch:'m-scan-res'};
+  var el=document.getElementById(map[role]);
+  if(role==='admin') el.innerHTML='<div class="res"><div class="rpts">+10 分</div><div class="rsub">矿泉水500ml · 当前积分：2,590</div></div>';
+  else if(role==='sales') el.innerHTML='<div class="res"><div class="rpts">+8 分</div><div class="rsub">矿泉水500ml · 管理员自动得 2 分<br>当前积分：1,248</div></div>';
+  else el.innerHTML='<div class="res"><div class="rpts">+8 分</div><div class="rsub">橙汁330ml · 张业务A自动得 2 分<br>当前积分：568</div></div>';
+}
+
+function openDeduct(name,cur){
+  document.getElementById('deduct-modal').innerHTML=
+    '<div class="modal-ov" onclick="closeM(event,\'deduct-modal\')"><div class="sheet">'+
+    '<div class="stitle">核销积分</div><div class="ssub">用户：'+name+' · 当前积分：'+cur+' 分</div>'+
+    '<input class="sinput" type="number" id="d-v" placeholder="输入核销数量">'+
+    '<div id="d-err" style="font-size:11px;color:#A32D2D;margin-bottom:6px;display:none;">积分不足，当前剩余 '+cur+' 分</div>'+
+    '<div class="sbtns"><button onclick="closeM(null,\'deduct-modal\')">取消</button>'+
+    '<button class="okr" onclick="doDeduct('+cur+')">确认核销</button></div></div></div>';
+}
+
+function doDeduct(cur){
+  var v=parseInt(document.getElementById('d-v').value)||0;
+  if(v>cur){document.getElementById('d-err').style.display='block';return;}
+  if(v<=0) return;
+  closeM(null,'deduct-modal');
+  alert('核销 '+v+' 积分成功');
+}
+
+function closeM(e,id){
+  if(e&&e.target!==e.currentTarget) return;
+  var el=document.getElementById(id);
+  if(el) el.innerHTML='';
+}
+
+function showTrace(s){
+  document.getElementById('trace-ui').style.display='none';
+  var r=document.getElementById('trace-res');
+  r.style.display='block';
+  if(s===0){
+    r.innerHTML=
+      '<div style="padding:10px 10px 0;display:flex;align-items:center;gap:8px;">'+
+      '<span class="pill pill-gr">未使用</span>'+
+      '<span style="font-size:12px;color:var(--color-text-secondary);">该码尚未被扫描</span></div>'+
+      '<div class="card"><div class="ch"><div style="font-size:14px;font-weight:500;color:var(--color-text-primary);">矿泉水500ml</div>'+
+      '<div style="font-size:12px;color:var(--color-text-secondary);margin-top:2px;">饮料类 · 序号：031</div></div>'+
+      '<div class="cb"><div class="tr"><span class="tk">积分值</span><span class="tv">10 分/件</span></div>'+
+      '<div class="tr"><span class="tk">生成时间</span><span class="tv">2025-01-10 09:00</span></div>'+
+      '<div class="tr"><span class="tk">扫码记录</span><span class="tv" style="color:var(--color-text-secondary);">暂无</span></div></div></div>'+
+      '<div style="margin:6px 10px;padding:10px;background:#F1EFE8;border-radius:8px;font-size:12px;color:#5F5E5A;">该二维码尚未使用，可正常流通</div>'+
+      '<button class="btn btnd" onclick="alert(\'已作废\')">作废此码</button>'+
+      '<button class="btn" onclick="resetTrace()">重新扫码</button>';
+  } else if(s===1){
+    r.innerHTML=
+      '<div style="padding:10px 10px 0;display:flex;align-items:center;gap:8px;">'+
+      '<span class="pill pill-g">已使用</span>'+
+      '<span style="font-size:12px;color:var(--color-text-secondary);">已扫码并分配积分</span></div>'+
+      '<div class="card"><div class="ch"><div style="font-size:14px;font-weight:500;color:var(--color-text-primary);">矿泉水500ml</div>'+
+      '<div style="font-size:12px;color:var(--color-text-secondary);margin-top:2px;">饮料类 · 序号：028</div></div>'+
+      '<div class="cb"><div class="tr"><span class="tk">积分值</span><span class="tv">10 分/件</span></div>'+
+      '<div class="tr"><span class="tk">扫码人</span><span class="tv">王商家C（商家）</span></div>'+
+      '<div class="tr"><span class="tk">扫码时间</span><span class="tv">2025-01-15 14:32</span></div></div></div>'+
+      '<div class="card"><div class="ch"><div style="font-size:13px;font-weight:500;color:var(--color-text-primary);">积分分配明细</div></div>'+
+      '<div class="cb"><div class="dist-row"><span style="font-size:12px;color:var(--color-text-secondary);">王商家C（商家）</span><span style="font-size:13px;font-weight:500;color:#3B6D11;">+8 分</span></div>'+
+      '<div class="dist-row"><span style="font-size:12px;color:var(--color-text-secondary);">张业务A（业务员）</span><span style="font-size:13px;font-weight:500;color:#3B6D11;">+2 分</span></div></div></div>'+
+      '<button class="btn btnd" onclick="alert(\'已作废，积分已回退\')">作废此码（积分回退）</button>'+
+      '<button class="btn" onclick="resetTrace()">重新扫码</button>';
+  } else {
+    r.innerHTML=
+      '<div style="padding:10px 10px 0;display:flex;align-items:center;gap:8px;">'+
+      '<span class="pill pill-r">已作废</span>'+
+      '<span style="font-size:12px;color:var(--color-text-secondary);">该码已作废</span></div>'+
+      '<div class="card"><div class="ch"><div style="font-size:14px;font-weight:500;color:var(--color-text-primary);">薯片大包</div>'+
+      '<div style="font-size:12px;color:var(--color-text-secondary);margin-top:2px;">食品类 · 序号：015</div></div>'+
+      '<div class="cb"><div class="tr"><span class="tk">原扫码人</span><span class="tv">陈商家D（商家）</span></div>'+
+      '<div class="tr"><span class="tk">原扫码时间</span><span class="tv">2025-01-12 10:15</span></div>'+
+      '<div class="tr"><span class="tk">作废时间</span><span class="tv">2025-01-13 09:00</span></div>'+
+      '<div class="tr"><span class="tk">作废原因</span><span class="tv">退货处理</span></div></div></div>'+
+      '<div style="margin:6px 10px;padding:10px;background:#FCEBEB;border-radius:8px;font-size:12px;color:#791F1F;">积分已回退：陈商家D -10分，李业务B -2分</div>'+
+      '<button class="btn" onclick="resetTrace()">重新扫码</button>';
+  }
+}
+
+function resetTrace(){
+  document.getElementById('trace-ui').style.display='';
+  document.getElementById('trace-res').style.display='none';
+  document.getElementById('trace-res').innerHTML='';
+}
+
+function filterP(){
+  var cat=document.getElementById('c-sel').value;
+  var sel=document.getElementById('p-sel');
+  sel.innerHTML='';
+  if(!cat){sel.innerHTML='<option>请先选择分类</option>';return;}
+  (prods[cat]||[]).forEach(function(p){sel.innerHTML+='<option>'+p[0]+'（'+p[1]+'分）</option>';});
+}
+
+function doGen(type){
+  var r=document.getElementById('gen-res');
+  if(type==='exist'){
+    var p=document.getElementById('p-sel').value;
+    if(!p||p.indexOf('请先')>-1){alert('请先选择分类和商品');return;}
+    r.innerHTML='<div style="margin:0 10px 10px;background:#EAF3DE;border-radius:8px;padding:12px;"><div style="font-size:13px;font-weight:500;color:#27500A;margin-bottom:4px;">生成成功</div><div style="font-size:12px;color:#3B6D11;">商品：'+p+'<br>共生成10个二维码（序号 029～038）</div><button class="btnp btn" style="margin-top:10px;width:100%;margin-left:0;" onclick="alert(\'已发送打印指令\')">打印二维码</button></div>';
+  } else {
+    var n=document.getElementById('cname').value;
+    if(!n){alert('请输入商品名称');return;}
+    var pts=document.getElementById('cpts').value||10;
+    var qty=document.getElementById('cqty').value||10;
+    r.innerHTML='<div style="margin:0 10px 10px;background:#EAF3DE;border-radius:8px;padding:12px;"><div style="font-size:13px;font-weight:500;color:#27500A;margin-bottom:4px;">创建并生成成功</div><div style="font-size:12px;color:#3B6D11;">商品：'+n+'（'+pts+'分/件）<br>共生成'+qty+'个二维码（序号 001～0'+qty+'）</div><button class="btnp btn" style="margin-top:10px;width:100%;margin-left:0;" onclick="alert(\'已发送打印指令\')">打印二维码</button></div>';
+  }
+}
+
+function openAddSalesman(){
+  document.getElementById('add-sal-modal').innerHTML=
+    '<div class="modal-ov" onclick="closeM(event,\'add-sal-modal\')"><div class="sheet">'+
+    '<div class="stitle">新增业务员</div><div class="ssub">系统将自动发送登录信息给业务员</div>'+
+    '<input class="sinput" placeholder="姓名">'+
+    '<input class="sinput" placeholder="手机号" type="tel">'+
+    '<div class="sbtns"><button onclick="closeM(null,\'add-sal-modal\')">取消</button>'+
+    '<button class="ok" onclick="closeM(null,\'add-sal-modal\');alert(\'业务员账号已创建，短信通知已发送\')">确认创建</button></div></div></div>';
+}
+
+function openAddMerchant(){
+  document.getElementById('add-merch-modal').innerHTML=
+    '<div class="modal-ov" onclick="closeM(event,\'add-merch-modal\')"><div class="sheet">'+
+    '<div class="stitle">登记商家手机号</div><div class="ssub">商家首次微信登录时将自动绑定到您名下</div>'+
+    '<input class="sinput" placeholder="商家手机号" type="tel">'+
+    '<input class="sinput" placeholder="商家名称（选填）">'+
+    '<div class="sbtns"><button onclick="closeM(null,\'add-merch-modal\')">取消</button>'+
+    '<button class="ok" onclick="closeM(null,\'add-merch-modal\');alert(\'登记成功，等待商家扫码绑定\')">确认登记</button></div></div></div>';
+}
+
+function sendOtp(btn){
+  btn.textContent='60s后重发';
+  btn.disabled=true;
+  var t=60;
+  var iv=setInterval(function(){
+    t--;btn.textContent=t+'s后重发';
+    if(t<=0){clearInterval(iv);btn.textContent='重新发送';btn.disabled=false;}
+  },1000);
+}
+
+function showBindFail(){
+  document.getElementById('bind-err').style.display='block';
+}
+</script>
